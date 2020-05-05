@@ -38,6 +38,29 @@ type ConfigSetup() =
         collections |> List.map fst |> should contain "announcements"
 
     [<Fact>]
+    let ``parse collection information into ICollection`` () =
+        let collections = ProjectConfig.getTomlCollections config
+        let parsedCollections =
+            collections |> List.map (fun c -> c ||> ProjectConfig.ParseCollection)
+
+        let postsVerifier (c: ProjectConfig.ICollection) =
+            c.Name            |> should equal "posts"
+            c.Path            |> should equal "/posts"
+            c.SummaryTemplate |> should equal "posts_summary.hbs"
+            c.DetailTemplate  |> should equal (Some "posts_detail.hbs")
+
+        let announcmentsVerifier (c: ProjectConfig.ICollection) =
+            c.Name            |> should equal "announcements"
+            c.Path            |> should equal "/announcements"
+            c.SummaryTemplate |> should equal "announcements_summary.hbs"
+            c.DetailTemplate  |> should equal None
+
+        parsedCollections |> should haveLength 2
+        Assert.Collection(parsedCollections,
+                          System.Action<_>(postsVerifier),
+                          System.Action<_>(announcmentsVerifier))
+
+    [<Fact>]
     let ``extract name from base config`` () =
         let name = ProjectConfig.getName config
 

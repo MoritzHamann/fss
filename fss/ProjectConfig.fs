@@ -36,20 +36,21 @@ type IConfig = {
 }
 
 
-let getName (config: Model.TomlTable)     = config.["name"] :?> string
-let getUrl (config: Model.TomlTable)      = config.["base_url"] :?> string
+let getName (config: Model.TomlTable) = config.["name"] :?> string
+let getUrl (config: Model.TomlTable) = config.["base_url"] :?> string
+let getPath (config: Model.TomlTable) = config.["path"] :?> string
 let getDefaultTemplate (config: Model.TomlTable) = config.["default_template"] :?> string
 let getSummaryTemplate (config: Model.TomlTable) = config.["summary_template"] :?> string
 let getDetailTemplate (config: Model.TomlTable) =
-    match config.ContainsKey("template") with
-    | true -> Some (config.["template"] :?> string)
+    match config.ContainsKey("detail_template") with
+    | true -> Some (config.["detail_template"] :?> string)
     | false -> None
 
 
 let ParseCollection (name: string) (collection: Model.TomlTable) =
     {
         Name = name
-        Path = ""
+        Path = getPath collection
         SummaryTemplate = getSummaryTemplate collection
         DetailTemplate = getDetailTemplate collection
     }
