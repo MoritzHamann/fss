@@ -4,36 +4,53 @@ open Xunit
 open FsUnit
 open Tomlyn
 
-[<Fact>]
-let ``extract collection names from config`` () =
-    let configContent = @"
-    [collections]
-        [collections.posts]
-        somekey = 'somevalue'
+type ConfigSetup() =
+    let configContent = """
+        name = "Test Site"
+        base_url = "http://localhost:3000"
+        default_template = "index.hbs"
 
-        [collections.announcements]
-        somekey = 'somevalue'
+        [collections]
+            [collections.posts]
+            path = "/posts"
+            summary_template = "posts_summary.hbs"
+            detail_template = "posts_detail.hbs"
 
-    [someOtherCollection]
-        [someOtherCollections.posts]
-        somekey = 'somevalue'
+            [collections.announcements]
+            path = "/announcements"
+            summary_template = "announcements_summary.hbs"
 
-        [someOtherCollections.announcements]
-        somekey = 'somevalue'
-    "
+        [someUnrelatedCollection]
+            [someUnrelatedCollections.pages]
+            somekey = 'somevalue'
+
+            [someUnrelatedCollections.announcements]
+            somekey = 'somevalue'
+        """
     let config = Toml.Parse configContent |> fun c -> c.ToModel()
-    let collections = ProjectConfig.getTomlCollections config
 
-    collections |> should haveLength 2
-    collections |> List.map fst |> should contain "posts"
-    collections |> List.map fst |> should contain "announcements"
+    [<Fact>]
+    let ``extract collection names from config`` () =
+        let collections = ProjectConfig.getTomlCollections config
 
-[<Fact>]
-let ``extractName from base config`` () =
-    let dummyKey = System.Collections.Generic.KeyValuePair<string,obj>("name", "ConfigName")
-    let dummyTabel = Model.TomlTable()
-    dummyTabel.Add dummyKey
+        collections |> should haveLength 2
+        collections |> List.map fst |> should contain "posts"
+        collections |> List.map fst |> should contain "announcements"
 
-    let name = ProjectConfig.getName dummyTabel
+    [<Fact>]
+    let ``extract name from base config`` () =
+        let name = ProjectConfig.getName config
 
-    name |> should equal "ConfigName"
+        name |> should equal "Test Site"
+
+    [<Fact>]
+    let ``extract base URL from base config`` () =
+        let baseUrl = ProjectConfig.getUrl config
+
+        baseUrl |> should equal "http://localhost:3000"
+
+    [<Fact>]
+    let ``extract default template from base config`` () =
+        let template = ProjectConfig.getDefaultTemplate config
+
+        template |> should equal "index.hbs"

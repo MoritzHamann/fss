@@ -38,7 +38,7 @@ type IConfig = {
 
 let getName (config: Model.TomlTable)     = config.["name"] :?> string
 let getUrl (config: Model.TomlTable)      = config.["base_url"] :?> string
-let getDefaultTemplate (config: Model.TomlTable) = config.["base_url"] :?> string
+let getDefaultTemplate (config: Model.TomlTable) = config.["default_template"] :?> string
 let getSummaryTemplate (config: Model.TomlTable) = config.["summary_template"] :?> string
 let getDetailTemplate (config: Model.TomlTable) =
     match config.ContainsKey("template") with
