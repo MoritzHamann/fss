@@ -29,7 +29,7 @@ let yamlDecoder =
 // key: value
 // ---
 // we need to manually control the parser, otherwise multiple documents would be parsed and
-// we get an exception (--- indicates the start of a new document)
+// we get an exception (since the second --- indicates the start of a new document)
 let ParseFrontMatter fileContent =
     use stringReader = new IO.StringReader(fileContent)
     let parser = YamlDotNet.Core.Parser(stringReader)
@@ -42,9 +42,9 @@ let ParseFrontMatter fileContent =
 let markdownPipeline =
     MarkdownPipelineBuilder().UseAdvancedExtensions().UseYamlFrontMatter().Build()
 
-// TODO: manually pare and then render to HTML, in order to allow relative links within documents
+// TODO: manually parse and then render to HTML, in order to allow relative links within documents
 let ParseMarkdown fileContent =
-    Markdown.ToHtml(fileContent)
+    Markdown.ToHtml(fileContent, markdownPipeline)
 
 
 // TODO: move that to async later to potentially enable parallelization

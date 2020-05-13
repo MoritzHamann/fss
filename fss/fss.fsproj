@@ -4,8 +4,15 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FileTree.fs" />
+    <ProjectReference Include="fss.fsproj">
+      <Name>fss.fsproj</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Document.fs" />
+    <Compile Include="FileTree.fs" />
+    <Compile Include="OutputGenerator.fs" />
+    <Compile Include="Renderer.fs" />
     <Compile Include="Theme.fs" />
     <Compile Include="ProjectConfig.fs" />
     <Compile Include="Program.fs" />

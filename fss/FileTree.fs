@@ -2,7 +2,7 @@ module FileTree
 
 type FileTree<'T> =
     | Doc of 'T
-    | Node of FileTree<'T> list
+    | Node of (string * FileTree<'T> list)
 
 
-let Create = Node []
+let Create = Node ("root", [])
