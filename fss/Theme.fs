@@ -5,7 +5,7 @@ open HandlebarsDotNet
 open Document
 
 
-type RenderContext = {
+type ThemeContext = {
     Templates: Map<string, Func<obj, string>>;
     RegisteredPartials: List<string>
 }
