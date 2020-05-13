@@ -24,7 +24,7 @@ type ConfigSetup() =
             [someUnrelatedCollections.pages]
             somekey = 'somevalue'
 
-            [someUnrelatedCollections.announcements]
+            [someUnrelatedCollections.news]
             somekey = 'somevalue'
         """
     let config = Toml.Parse configContent |> fun c -> c.ToModel()
@@ -39,10 +39,6 @@ type ConfigSetup() =
 
     [<Fact>]
     let ``parse collection information into ICollection`` () =
-        let collections = ProjectConfig.getTomlCollections config
-        let parsedCollections =
-            collections |> List.map (fun c -> c ||> ProjectConfig.ParseCollection)
-
         let postsVerifier (c: ProjectConfig.ICollection) =
             c.Name            |> should equal "posts"
             c.Path            |> should equal "/posts"
@@ -54,6 +50,10 @@ type ConfigSetup() =
             c.Path            |> should equal "/announcements"
             c.SummaryTemplate |> should equal "announcements_summary.hbs"
             c.DetailTemplate  |> should equal None
+
+        let collections = ProjectConfig.getTomlCollections config
+        let parsedCollections =
+            collections |> List.map (fun c -> c ||> ProjectConfig.ParseCollection)
 
         parsedCollections |> should haveLength 2
         Assert.Collection(parsedCollections,
