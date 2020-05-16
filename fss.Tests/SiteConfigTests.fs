@@ -1,8 +1,9 @@
-module ProjectConfigTests
+module SiteConfigTests
 
 open Xunit
 open FsUnit
 open Tomlyn
+open FSS
 
 type ConfigSetup() =
     let configContent = """
@@ -31,49 +32,47 @@ type ConfigSetup() =
 
     [<Fact>]
     let ``extract collection names from config`` () =
-        let collections = ProjectConfig.getTomlCollections config
+        let collections = SiteConfig.ParseCollectionTables config
 
         collections |> should haveLength 2
-        collections |> List.map fst |> should contain "posts"
-        collections |> List.map fst |> should contain "announcements"
+        collections |> List.map SiteConfig.CollectionName |> should contain "posts"
+        collections |> List.map SiteConfig.CollectionName |> should contain "announcements"
 
     [<Fact>]
     let ``parse collection information into ICollection`` () =
-        let postsVerifier (c: ProjectConfig.ICollection) =
-            c.Name            |> should equal "posts"
-            c.Path            |> should equal "/posts"
+        let postsVerifier (c: CollectionConfig) =
+            c.CollectionName  |> should equal "posts"
+            c.OutputPath      |> should equal "/posts"
             c.SummaryTemplate |> should equal "posts_summary.hbs"
             c.DetailTemplate  |> should equal (Some "posts_detail.hbs")
 
-        let announcmentsVerifier (c: ProjectConfig.ICollection) =
-            c.Name            |> should equal "announcements"
-            c.Path            |> should equal "/announcements"
+        let announcmentsVerifier (c: CollectionConfig) =
+            c.CollectionName  |> should equal "announcements"
+            c.OutputPath      |> should equal "/announcements"
             c.SummaryTemplate |> should equal "announcements_summary.hbs"
             c.DetailTemplate  |> should equal None
 
-        let collections = ProjectConfig.getTomlCollections config
-        let parsedCollections =
-            collections |> List.map (fun c -> c ||> ProjectConfig.ParseCollection)
+        let collections = SiteConfig.ParseCollectionTables config
 
-        parsedCollections |> should haveLength 2
-        Assert.Collection(parsedCollections,
+        collections |> should haveLength 2
+        Assert.Collection(collections,
                           System.Action<_>(postsVerifier),
                           System.Action<_>(announcmentsVerifier))
 
     [<Fact>]
     let ``extract name from base config`` () =
-        let name = ProjectConfig.getName config
+        let name = SiteConfig.BaseConfig.getName config
 
         name |> should equal "Test Site"
 
     [<Fact>]
     let ``extract base URL from base config`` () =
-        let baseUrl = ProjectConfig.getUrl config
+        let baseUrl = SiteConfig.BaseConfig.getBaseUrl config
 
         baseUrl |> should equal "http://localhost:3000"
 
     [<Fact>]
     let ``extract default template from base config`` () =
-        let template = ProjectConfig.getDefaultTemplate config
+        let template = SiteConfig.BaseConfig.getDefaultTemplate config
 
         template |> should equal "index.hbs"
