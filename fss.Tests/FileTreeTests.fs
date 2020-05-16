@@ -2,27 +2,71 @@ module FileTreeTests
 
 open Xunit
 open FsUnit
-open FileTree
+open FSS
 
 
-// [<Fact>]
-// let ``create empty root node`` () =
-//     FileTree.Create "/" |> should equal (Folder ("/", []))
+[<Fact>]
+let ``create empty root node`` () =
+    FileTree.Root |> should equal {Files=Map.empty; Folders=Map.empty}
 
-// [<Fact>]
-// let ``find node by path`` () =
-//     let tree = Folder ("/", [
-//         File "index.html";
-//         Folder ("posts", [
-//             File "first_post.html";
-//             File "second_post.html"
-//         ])
-//     ])
 
-//     let postsFolder = FileTree.GetPath "/posts" tree
-//     let expected = 
-//         Folder ("posts", [
-//             File "first_post.html";
-//             File "second_post.html"
-//         ])
-//     postsFolder |> should equal expected
+[<Fact>]
+let ``Add folder which does not exist`` () =
+    let root = FileTree.Root
+    let expected = {
+        Files=Map.empty;
+        Folders=Map.ofList [
+            ("MyFolder", {
+                Files=Map.empty;
+                Folders=Map.empty
+            })
+        ]
+    }
+
+    FileTree.AddFolder "MyFolder" root |> should equal expected
+
+
+[<Fact>]
+let ``Do not add duplicate folder`` () =
+    let baseNode = {
+        Files=Map.empty;
+        Folders=Map.ofList [
+            ("MyFolder", {
+                Files=Map.ofList[("someFile", "somecontent")];
+                Folders=Map.empty
+            })
+        ]
+    }
+
+    FileTree.AddFolder "MyFolder" baseNode |> should equal baseNode
+
+
+[<Fact>]
+let ``Add folder at in existing sub folder`` () =
+    let baseNode = {
+        Files=Map.empty;
+        Folders=Map.ofList [
+            ("MyFolder", {
+                Files=Map.ofList[("someFile", "somecontent")];
+                Folders=Map.empty
+            })
+        ]
+    }
+    let expected = {
+        Files=Map.empty;
+        Folders=Map.ofList [
+            ("MyFolder", {
+                Files=Map.ofList[("someFile", "somecontent")];
+                Folders=Map.ofList [
+                    ("MySecondFolder", {
+                        Files=Map.empty;
+                        Folders=Map.empty
+                    })
+                ]}
+            )
+        ]
+    }
+
+    let result = FileTree.ModifyAtPath baseNode (Path ["MyFolder"]) (FileTree.AddFolder "MySecondFolder")
+    result |> should equal expected
+

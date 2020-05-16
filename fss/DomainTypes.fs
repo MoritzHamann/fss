@@ -37,8 +37,13 @@ module DomainTypes =
         HtmlContent: string;
     }
 
+    type DocumentProperties = {
+        FilePath: string;
+        Created: DateTime;
+    }
+
     type Document = {
-        FileName: string;
+        Properties: DocumentProperties;
         Content: DocumentContent;
     }
 
@@ -64,12 +69,18 @@ module DomainTypes =
     /// File tree
     /// =========
     
-    type FileTree<'T> =
-        | File of 'T
-        | Folder of FileTreeFolder<'T> 
+    type Path = Path of string list
+
+    type Folder<'T> = {
+        Files: Map<string, 'T>;
+        Folders: Map<string, Folder<'T>>;
+    }
+
+
+    /// =======================
+    /// Rendering related types
+    /// =======================
     
-    and FileTreeFolder<'T> =
-        {
-            Name: string;
-            Content: FileTree<'T> list
-        }
+    type RenderTarget =
+        | DetailDoc of Document
+        | Summary of Document list

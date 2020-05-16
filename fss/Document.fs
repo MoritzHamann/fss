@@ -49,9 +49,17 @@ module Document =
         let content = IO.File.ReadAllText path
 
         {
-            FileName = name;
+            Properties = {
+                FilePath = path;
+                Created = IO.File.GetCreationTimeUtc path
+            };
             Content = Parse content
         }
+    
+    let FileName doc = IO.Path.GetFileNameWithoutExtension doc.Properties.FilePath
+    let PublicationYear doc = doc.Properties.Created.Year
+    let PublicationMonth doc = doc.Properties.Created.Month
+    let PublicationDay doc = doc.Properties.Created.Day
 
 
 module DocumentSrcParser =
