@@ -12,41 +12,6 @@ let main argv =
     // let theme = Theme.ParseFolder themePath
     // printf "%A\n" theme
 
-    let baseTree = {
-        Files=Map.empty;
-        Folders=Map.ofList [
-            (
-                "MyFolder",
-                {
-                    Files=Map.empty;
-                    Folders=Map.empty;
-                }
-            )
-        ]
-    }
-    let expected = {
-        Files=Map.empty;
-        Folders=Map.ofList [
-            (
-                "MyFolder",
-                {
-                    Files=Map.empty;
-                    Folders=Map.ofList [
-                        (
-                            "MySecondFolder",
-                            {
-                                Files=Map.empty;
-                                Folders=Map.empty
-                            }
-                        )
-                    ]
-                }
-            )
-        ];
-    }
-
-    let result = FileTree.ModifyAtPath baseTree (Path ["MyFolder"]) (FileTree.AddFolder "MySecondFolder")
-
     // Map.iter (fun name _ -> printf "%A\n" name) theme.Templates
 
     0

@@ -2,31 +2,53 @@ namespace FSS
 
 module FileTree =
 
-    let Root = {Files = Map.empty; Folders =  Map.empty} 
+    let Root = Folder (Map.empty) 
 
-    let HasChildFolder name node =
-        Map.containsKey name node.Folders 
+    let isFile = function
+    | File _ -> true
+    | Folder _ -> false
 
-    let AddFolder name node =
-        match HasChildFolder name node with
-        | true -> node
-        | false ->
-            let folders = Map.add name {Files=Map.empty; Folders=Map.empty} node.Folders
-            {node with Folders = folders}
-        
-    let GetFolderOrCreate name node =
-        match Map.tryFind name node.Folders with
-        | Some node -> node
-        | None -> {Files=Map.empty; Folders=Map.empty}
+    let isFolder = function
+    | File _ -> false
+    | Folder _ -> true
+
+    let ChildExists name node =
+        match node with
+        | File _ -> false
+        | Folder content -> Map.containsKey name content
+
+    let GetChild name node =
+        match node with
+        | File _ -> None
+        | Folder content -> Map.tryFind name content
     
-    let AddFile name file node =
-        {node with Files = Map.add name file node.Files}
+    let GetFolder name node =
+        Option.filter isFolder (GetChild name node)
+    
+    let GetFile name node =
+        Option.filter isFile (GetChild name node)
 
+    /// Adds or replaces a file in a folder.
+    /// Throws if node is a file rather than a folder or if folder already exists
+    let AddChild name child node =
+        match node with
+        | File _ -> failwith "Can not add file to a file"
+        | Folder content ->
+            match GetChild name node with
+            | Some _ -> failwith "File or folder with same name already exists"
+            | None -> Folder (Map.add name child content)
 
-    let rec ModifyAtPath node (Path path) modifier =
-        match path with
-        | [] -> modifier node
-        | nextFolder::rest -> 
-            let subFolder = GetFolderOrCreate nextFolder node
-            let modifiedSubFolder = ModifyAtPath subFolder (Path rest) modifier
-            {node with Folders = Map.add nextFolder modifiedSubFolder node.Folders}
+    /// Retrieve the subfolder by name, or create an empty one
+    /// Throws if file with the same name exists in the folder
+    let GetOrCreateSubfolder name node =
+        match GetFolder name node with
+        | None -> AddChild name (Folder Map.empty) node
+        | Some f ->  f
+
+    // let rec ModifyAtPath node (Path path) modifier =
+    //     match path with
+    //     | [] -> modifier node
+    //     | nextFolder::rest -> 
+    //         let subFolder = GetOrCreateSubfolder nextFolder node
+    //         let modifiedSubFolder = ModifyAtPath subFolder (Path rest) modifier
+    //         {node with Content = Map.add nextFolder (Folder modifiedSubFolder) node.Content}

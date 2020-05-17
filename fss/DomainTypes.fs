@@ -65,16 +65,16 @@ module DomainTypes =
         RegisteredPartials: TemplateName list;
     }
 
+
     /// =========
     /// File tree
     /// =========
     
     type Path = Path of string list
 
-    type Folder<'T> = {
-        Files: Map<string, 'T>;
-        Folders: Map<string, Folder<'T>>;
-    }
+    type ContentType<'T> =
+        | File of 'T
+        | Folder of Map<string, ContentType<'T>>
 
 
     /// =======================
