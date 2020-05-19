@@ -45,10 +45,15 @@ module FileTree =
         | None -> AddChild name (Folder Map.empty) node
         | Some f ->  f
 
-    // let rec ModifyAtPath node (Path path) modifier =
-    //     match path with
-    //     | [] -> modifier node
-    //     | nextFolder::rest -> 
-    //         let subFolder = GetOrCreateSubfolder nextFolder node
-    //         let modifiedSubFolder = ModifyAtPath subFolder (Path rest) modifier
-    //         {node with Content = Map.add nextFolder (Folder modifiedSubFolder) node.Content}
+    let rec ModifyAtPath (Path path) modifier node =
+        let content = 
+            match node with
+            | File _ -> failwith "can not modify file, only folders"
+            | Folder c -> c
+
+        match path with
+        | [] -> modifier node
+        | nextFolder::rest -> 
+            let subFolder = GetOrCreateSubfolder nextFolder node
+            let modifiedSubFolder = ModifyAtPath (Path rest) modifier subFolder 
+            Folder (Map.add nextFolder modifiedSubFolder content)

@@ -25,13 +25,18 @@ module OutputGenerator =
             (@"%y", year);
             (@"%n", name);
         ]
+        let path = (pathString, replacements)
+                    ||> List.fold (fun path (rep, value) -> path.Replace(rep, value))
 
-        (pathString, replacements) ||> List.fold (fun path (rep, value) -> path.Replace(rep, value))
+        path.Split "/" |> Array.toList |> List.filter (fun p -> p <> "") |> Path
 
 
     let SingleDetailDocEngine pathString doc filetree =
         let path = filePathForDoc pathString doc
-        filetree
+        let target = DetailDoc doc
+        let insertModification = FileTree.AddChild (Document.FileName doc) (File target)
+        
+        FileTree.ModifyAtPath path insertModification filetree
 
     let Generate docs engine =
         let rootTree = FileTree.Root

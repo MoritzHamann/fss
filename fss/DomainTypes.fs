@@ -17,6 +17,7 @@ module DomainTypes =
     }
     
     type SiteConfig = {
+        ProjectBasePath: string;
         BaseUrl : string;
         DefaultTemplate : string;
         Name : string;
@@ -72,9 +73,9 @@ module DomainTypes =
     
     type Path = Path of string list
 
-    type ContentType<'T> =
+    type TreeContent<'T> =
         | File of 'T
-        | Folder of Map<string, ContentType<'T>>
+        | Folder of Map<string, TreeContent<'T>>
 
 
     /// =======================

@@ -1,5 +1,6 @@
 namespace FSS
 
+open System.IO
 open Tomlyn
 
 /// Example config file
@@ -67,15 +68,27 @@ module SiteConfig =
                 |> Seq.toList
             
 
-    let Parse (fileContent: string) =
+    let ParseContent basePath (fileContent: string) =
+        printf "%A\n" basePath
         let config = fileContent |> Toml.Parse |> fun config -> config.ToModel()
         
         {
+            ProjectBasePath = basePath;
             BaseUrl = BaseConfig.getBaseUrl config;
             DefaultTemplate = BaseConfig.getDefaultTemplate config;
             Name = BaseConfig.getName config;
             Collections = ParseCollectionTables config
         }
     
+    let Parse (basePath: string) =
+        let configPath = Path.Combine [|basePath; "config.toml"|]
+        let configContent = File.ReadAllText configPath
+        ParseContent basePath configContent
+
+
+    let ProjectPath config = config.ProjectBasePath
+
+    let SourcePath config = Path.Combine [|ProjectPath config; "src"|]
+
     let Collections config = config.Collections
     let CollectionName collection = collection.CollectionName

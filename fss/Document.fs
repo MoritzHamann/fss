@@ -72,7 +72,8 @@ module DocumentSrcParser =
         |> Array.map Document.FromFile
         |> Array.toList
     
-    let ParseSrcFolder config path =
+    let ParseSrcFolder config =
+        let path = SiteConfig.SourcePath config
         let topLevelDocs = ParseFolder path
         let collectionDocs =
             (SiteConfig.Collections config, Map.empty)
