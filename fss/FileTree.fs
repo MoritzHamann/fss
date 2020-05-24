@@ -1,5 +1,22 @@
 namespace FSS
 
+open System
+
+module Path =
+    /// operations on Path type. the path information are stored as a list in reverse order
+    /// 
+
+    let ofString (str: string) =
+        let splitted = str.Split IO.Path.PathSeparator
+        Path (List.ofArray splitted)
+
+    let toString (Path path) =
+        IO.Path.Join (Array.ofList path)
+
+    let Append (Path path) childName =
+        Path (List.append path [childName])
+    let Childs (Path path) = Path (List.tail path)
+
 module FileTree =
 
     let Root = Folder (Map.empty) 

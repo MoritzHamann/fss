@@ -85,3 +85,4 @@ module DomainTypes =
     type RenderTarget =
         | DetailDoc of Document
         | Summary of Document list
+        | StaticFile of Path

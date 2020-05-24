@@ -13,6 +13,10 @@ let main argv =
     let engine = OutputGenerator.SingleDetailDocEngine ""
     let filetree = OutputGenerator.Generate docs.TopLevelDocs engine
 
+    let proPath = Path.ofString projectPath
+    let outPath = Path.Append proPath "out"
+    Renderer.Render outPath filetree
+
     printf "%A\n" filetree
 
 

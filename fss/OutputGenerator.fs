@@ -1,10 +1,5 @@
 namespace FSS
 
-// TODO: implement a function which takes a list of Documents and an "output engine"
-//       of type: Document -> FileTree<RenderTarget> -> FileTree<RenderTarget>,
-//       where RenderTarget contains information about the document like
-//       name, template used, content etc
-//       Multiple output engines should be chainable
 
 module OutputGenerator =
 
@@ -34,7 +29,8 @@ module OutputGenerator =
     let SingleDetailDocEngine pathString doc filetree =
         let path = filePathForDoc pathString doc
         let target = DetailDoc doc
-        let insertModification = FileTree.AddChild (Document.FileName doc) (File target)
+        let fileName = Document.FileName doc + ".html"
+        let insertModification = FileTree.AddChild fileName (File target)
         
         FileTree.ModifyAtPath path insertModification filetree
 
