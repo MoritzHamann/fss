@@ -8,6 +8,7 @@
     <Compile Include="SiteConfig.fs" />
     <Compile Include="Document.fs" />
     <Compile Include="FileTree.fs" />
+    <Compile Include="SrcFileParser.fs" />
     <Compile Include="OutputGenerator.fs" />
     <Compile Include="Renderer.fs" />
     <Compile Include="Theme.fs" />

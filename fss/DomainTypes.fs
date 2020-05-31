@@ -1,28 +1,10 @@
 namespace FSS
 
 open System
+open Markdig
 
 [<AutoOpen>]
 module DomainTypes = 
-
-    /// ============
-    /// site config
-    /// ============
-    
-    type CollectionConfig = {
-        CollectionName : string;
-        OutputPath : string;
-        SummaryTemplate : string;
-        DetailTemplate : Option<string>;
-    }
-    
-    type SiteConfig = {
-        ProjectBasePath: string;
-        BaseUrl : string;
-        DefaultTemplate : string;
-        Name : string;
-        Collections : CollectionConfig list;
-    }
 
     /// ======================
     /// Document related types
@@ -35,7 +17,7 @@ module DomainTypes =
 
     type DocumentContent = {
         FrontMatter: FrontMatter;
-        HtmlContent: string;
+        MarkdownAST: Syntax.MarkdownDocument;
     }
 
     type DocumentProperties = {
@@ -83,6 +65,6 @@ module DomainTypes =
     /// =======================
     
     type RenderTarget =
-        | DetailDoc of Document
-        | Summary of Document list
+        | DetailDoc of Template * Document
+        | Summary of Template * Document list
         | StaticFile of Path

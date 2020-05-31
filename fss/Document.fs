@@ -35,31 +35,34 @@ module Document =
 
     // TODO: manually parse and then render to HTML, in order to allow relative links within documents
     let ParseMarkdown fileContent =
-        Markdown.ToHtml(fileContent, markdownPipeline)
+        Markdown.Parse(fileContent, markdownPipeline)
 
 
     let Parse content =
         {
             FrontMatter = ParseFrontMatter content;
-            HtmlContent = ParseMarkdown content;
+            MarkdownAST = ParseMarkdown content;
         }
 
     let FromFile (path: string) =
-        let name = IO.Path.GetFileNameWithoutExtension path
         let content = IO.File.ReadAllText path
-
-        {
-            Properties = {
+        let fileProperties = {
                 FilePath = path;
                 Created = IO.File.GetCreationTimeUtc path
-            };
-            Content = Parse content
+        }
+        let fileContent = Parse content
+
+        // return new Document
+        {
+            Properties = fileProperties;
+            Content = fileContent
         }
     
     let FileName doc = IO.Path.GetFileNameWithoutExtension doc.Properties.FilePath
     let PublicationYear doc = doc.Properties.Created.Year
     let PublicationMonth doc = doc.Properties.Created.Month
     let PublicationDay doc = doc.Properties.Created.Day
+    let contentToString doc = Markdown.ToHtml
 
 
 module DocumentSrcParser =

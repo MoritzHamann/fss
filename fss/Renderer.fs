@@ -6,8 +6,18 @@ module Renderer =
 
     /// TODO: get template and render with frontmatter + content
     let renderDetail (writer: StreamWriter) doc =
-        writer.Write(doc.Content.HtmlContent)
-        writer.Flush()
+        // let frontMatter = Document.frontMatter doc
+        // let content = Document.contentToString doc
+        // let template = RenderTarget.template
+        // let docContent = {
+        //     frontMatter = frontMatter;
+        //     content = content
+        // }
+        // let fileContent = Template.Render template [docContent]
+
+        // writer.Write(fileContent)
+        // writer.Flush()
+        ()
 
     let renderSummary writer docs = ()
 
@@ -28,10 +38,12 @@ module Renderer =
             let writer = File.CreateText (Path.toString path)
             renderFile writer renderTarget
         | Folder content ->
+            /// helper to call render the child witht he appropriate path
             let renderChild entryName entryNode =
                 let newPath = Path.Append path entryName
                 renderNodes newPath entryNode
 
+            /// create the current path directory and then render all its childs
             Directory.CreateDirectory (Path.toString path) |> ignore
             Map.iter renderChild content
 
